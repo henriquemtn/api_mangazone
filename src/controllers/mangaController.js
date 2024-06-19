@@ -156,6 +156,7 @@ exports.addVolume = async (req, res) => {
       number,
       date,
       alternativeCover,
+      chapters,
       image,
       linkAmazon,
       price,
