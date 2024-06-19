@@ -142,7 +142,7 @@ exports.deleteManga = async (req, res) => {
 // Adicionar volume a um mangá específico
 exports.addVolume = async (req, res) => {
   const { mangaId } = req.params;
-  const { number, date, alternativeCover, image, linkAmazon, price } = req.body;
+  const { number, date, alternativeCover, image, linkAmazon, price, chapters } = req.body;
 
   try {
     // Encontra o mangá pelo ID
