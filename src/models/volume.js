@@ -8,7 +8,7 @@ const VolumeSchema = new Schema({
   image: { type: String },
   linkAmazon: { type: String },
   price: { type: Number },
-  chapters: [{ type: String }]
+  chapters: { type: String }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Volume', VolumeSchema);

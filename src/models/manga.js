@@ -15,7 +15,7 @@ const volumeSchema = new mongoose.Schema({
     number: { type: Number, required: true },
     date: { type: String },
     alternativeCover: { type: Boolean, default: false },
-    chapters: [{ type: String }],
+    chapters: { type: String },
     image: { type: String },
     linkAmazon: { type: String },
     price: { type: Number }
