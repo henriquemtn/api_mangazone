@@ -66,7 +66,12 @@ exports.login = async (req, res) => {
 
     jwt.sign(payload, 'jwtSecret', { expiresIn: 3600 }, (err, token) => {
       if (err) throw err;
-      res.json({ token });
+      res.json({
+        token,
+        user: {  // Inclui os dados do usuário no retorno da resposta
+          id: user.id,
+        }
+      });
     });
   } catch (err) {
     console.error(err.message);
