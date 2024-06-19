@@ -70,6 +70,19 @@ exports.login = async (req, res) => {
         token,
         user: {  // Inclui os dados do usuário no retorno da resposta
           id: user.id,
+          email: user.email,
+          username: user.username,
+          displayName: user.displayName,
+          biography: user.biography,
+          photoURL: user.photoURL,
+          location: user.location,
+          favorites: user.favorites,
+          characters: user.characters,
+          people: user.people,
+          comments: user.comments,
+          friends: user.friends,
+          wishlist: user.wishlist,
+          role: user.role
         }
       });
     });
