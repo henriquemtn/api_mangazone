@@ -42,10 +42,20 @@ exports.createManga = async (req, res) => {
   }
 };
 
-// Obter todos os mangás
+// Obter todos os mangás (com filtro opcional por nome)
 exports.getAllMangas = async (req, res) => {
   try {
-    const mangas = await Manga.find();
+    // Verifica se há um parâmetro de consulta 'nome'
+    const { nome } = req.query;
+    let query = {};
+
+    // Se 'nome' estiver presente na consulta, constrói a consulta para filtrar por nome
+    if (nome) {
+      query = { title: { $regex: new RegExp(nome, 'i') } }; // 'i' para fazer a busca case insensitive
+    }
+
+    // Realiza a busca no banco de dados com a consulta construída
+    const mangas = await Manga.find(query);
     res.json(mangas);
   } catch (err) {
     console.error(err.message);
