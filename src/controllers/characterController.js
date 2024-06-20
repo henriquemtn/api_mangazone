@@ -63,6 +63,28 @@ exports.getCharactersByManga = async (req, res) => {
   }
 };
 
+// Obter um único personagem por ID
+exports.getCharacterById = async (req, res) => {
+  const { mangaId, characterId } = req.params;
+
+  try {
+    const manga = await Manga.findById(mangaId);
+    if (!manga) {
+      return res.status(404).json({ message: "Mangá não encontrado" });
+    }
+
+    const character = manga.characters.id(characterId);
+    if (!character) {
+      return res.status(404).json({ message: "Personagem não encontrado" });
+    }
+
+    res.json({ character });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro no servidor");
+  }
+};
+
 // Atualizar um personagem
 exports.updateCharacter = async (req, res) => {
   const { mangaId, characterId } = req.params;
@@ -99,27 +121,33 @@ exports.updateCharacter = async (req, res) => {
   }
 };
 
-// Deletar um personagem
 exports.deleteCharacter = async (req, res) => {
   const { mangaId, characterId } = req.params;
 
   try {
     const manga = await Manga.findById(mangaId);
     if (!manga) {
+      console.log("Mangá não encontrado:", mangaId);
       return res.status(404).json({ message: "Mangá não encontrado" });
     }
 
     const character = manga.characters.id(characterId);
     if (!character) {
+      console.log("Personagem não encontrado:", characterId);
       return res.status(404).json({ message: "Personagem não encontrado" });
     }
 
-    character.remove();
+    // Use the pull method to remove the character from the array
+    manga.characters.pull({ _id: characterId });
+
+    // Log do estado do manga após a remoção do personagem
+    console.log("Estado do manga após remoção do personagem:", JSON.stringify(manga, null, 2));
+
     await manga.save();
 
     res.json({ message: "Personagem deletado com sucesso" });
   } catch (err) {
-    console.error(err.message);
+    console.error("Erro no servidor ao deletar personagem:", err.message);
     res.status(500).send("Erro no servidor");
   }
 };

@@ -4,6 +4,7 @@ const characterController = require('../controllers/characterController');
 
 // Rotas para CRUD de personagens
 router.get('/:mangaId/characters', characterController.getCharactersByManga);
+router.get('/:mangaId/characters/:characterId', characterController.getCharacterById);
 router.post('/:mangaId/characters', characterController.addCharacter);
 router.put('/:mangaId/characters/:characterId', characterController.updateCharacter);
 router.delete('/:mangaId/characters/:characterId', characterController.deleteCharacter);
