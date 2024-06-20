@@ -13,7 +13,10 @@ const UserSchema = new Schema({
   role: { type: String, default: 'user' }, 
   favorites: [{ type: String },], 
   characters: [{ type: String },],
-  mangaCollection: [{ type: String },], 
+  mangaCollection: [{
+    mangaId: { type: Schema.Types.ObjectId, ref: 'Manga' },
+    volumes: [{ type: Schema.Types.ObjectId, ref: 'Volume' }] 
+  }],
   people: [{ type: String },], 
   comments: [{ type: String },],
   friends: [{ type: String },],

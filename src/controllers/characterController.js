@@ -185,12 +185,23 @@ exports.addVoiceActorToCharacter = async (req, res) => {
     // Adiciona o ID do dublador à lista de dubladores do personagem
     character.voiceActors.push(voiceActor._id);
 
-    // Adiciona o ID do personagem à lista de dubCharacters do dublador
-    if (!voiceActor.dubCharacters.includes(character._id)) {
-      voiceActor.dubCharacters.push(character._id);
-      await voiceActor.save(); // Salva o dublador atualizado
+    // Adiciona o personagem ao dublador se não estiver presente
+    const existingDubCharacter = voiceActor.dubCharacters.find(
+      (dc) => dc.mangaId.toString() === mangaId.toString()
+    );
+
+    if (existingDubCharacter) {
+      if (!existingDubCharacter.charactersId.includes(characterId)) {
+        existingDubCharacter.charactersId.push(characterId);
+      }
+    } else {
+      voiceActor.dubCharacters.push({
+        mangaId: mangaId,
+        charactersId: [characterId],
+      });
     }
 
+    await voiceActor.save(); // Salva o dublador atualizado
     await manga.save(); // Salva o manga com o dublador adicionado ao personagem
 
     res.json({

@@ -136,3 +136,143 @@ exports.updateUser = async (req, res) => {
     res.status(500).send('Erro ao atualizar informações do usuário');
   }
 };
+
+// Adicionar um mangá à mangaCollection
+exports.addToMangaCollection = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { mangaId } = req.body; // Recebe mangaId do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Verifica se o mangá já está na coleção do usuário
+    const existingManga = user.mangaCollection.find(item => item.mangaId.equals(mangaId));
+    if (existingManga) {
+      return res.status(400).json({ message: 'Este mangá já está na sua coleção' });
+    }
+
+    // Adiciona o mangá à mangaCollection do usuário
+    user.mangaCollection.push({ mangaId });
+    await user.save();
+
+    res.json({ message: 'Mangá adicionado à coleção com sucesso', mangaId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao adicionar mangá à coleção');
+  }
+};
+
+// Adicionar volumes a um mangá na mangaCollection
+exports.addVolumeToManga = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { mangaId, volumeId } = req.body; // Recebe mangaId e volumeId do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Encontra o mangá na mangaCollection do usuário
+    const manga = user.mangaCollection.find(item => item.mangaId.equals(mangaId));
+    if (!manga) {
+      return res.status(404).json({ message: 'Mangá não encontrado na coleção do usuário' });
+    }
+
+    // Inicializa volumes como um array vazio, se for undefined
+    if (!manga.volumes) {
+      manga.volumes = [];
+    }
+
+    // Verifica se o volume já está presente no mangá
+    if (manga.volumes.includes(volumeId)) {
+      return res.status(400).json({ message: 'Este volume já está associado ao mangá' });
+    }
+
+    // Adiciona o volume ao mangá na mangaCollection
+    manga.volumes.push(volumeId);
+    await user.save();
+
+    res.json({ message: 'Volume adicionado ao mangá com sucesso', mangaId, volumeId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao adicionar volume ao mangá');
+  }
+};
+
+// Obter mangaCollection de um usuário pelo ID
+exports.getMangaCollection = async (req, res) => {
+  const userId = req.params.userId; // Obtém o ID do usuário a partir dos parâmetros da URL
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Retorna a mangaCollection do usuário
+    res.json({ mangaCollection: user.mangaCollection });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao buscar mangaCollection do usuário');
+  }
+};
+
+// Deletar mangá da mangaCollection de um usuário
+exports.deleteMangaFromCollection = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { mangaId } = req.params; // Obtém o ID do mangá a ser deletado dos parâmetros da URL
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Encontra o índice do mangá na mangaCollection do usuário
+    const index = user.mangaCollection.findIndex(item => item.mangaId.equals(mangaId));
+    if (index === -1) {
+      return res.status(404).json({ message: 'Mangá não encontrado na coleção do usuário' });
+    }
+
+    // Remove o mangá da mangaCollection
+    user.mangaCollection.splice(index, 1);
+    await user.save();
+
+    res.json({ message: 'Mangá removido da coleção com sucesso', mangaId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao remover mangá da coleção');
+  }
+};
+
+// Remover volumes de um mangá na mangaCollection de um usuário
+exports.removeVolumesFromManga = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { mangaId, volumeId } = req.body; // Recebe mangaId e volumeIds do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Encontra o mangá na mangaCollection do usuário
+    const manga = user.mangaCollection.find(item => item.mangaId.equals(mangaId));
+    if (!manga) {
+      return res.status(404).json({ message: 'Mangá não encontrado na coleção do usuário' });
+    }
+
+    // Remove os volumeIds do mangá na mangaCollection
+    manga.volumes = manga.volumes.filter(vol => !volumeId.includes(vol.toString())); // Converte para string para comparação
+    await user.save();
+
+    res.json({ message: 'Volumes removidos do mangá com sucesso', mangaId, volumeId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao remover volumes do mangá');
+  }
+};
