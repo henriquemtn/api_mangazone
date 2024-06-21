@@ -1,5 +1,5 @@
 const Manga = require("../models/manga");
-const VoiceActor = require("../models/voiceActor");
+const VoiceActor = require("../models/artist");
 
 // Adicionar personagem a um mangá
 exports.addCharacter = async (req, res) => {
