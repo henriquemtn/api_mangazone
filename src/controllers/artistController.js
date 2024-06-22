@@ -171,3 +171,72 @@ exports.addDubCharacter = async (req, res) => {
     res.status(500).send("Erro no servidor");
   }
 };
+
+// Adicionar um novo mangaId ao campo mangasRelationship de um artista
+exports.addMangaRelationship = async (req, res) => {
+  const { id } = req.params;
+  const { mangaId } = req.body;
+
+  try {
+    let artist = await Artist.findById(id);
+    if (!artist) {
+      return res.status(404).json({ message: "Artista não encontrado" });
+    }
+
+    // Adiciona o novo mangaId ao campo mangasRelationship
+    artist.mangasRelationship.push(mangaId);
+
+    await artist.save();
+
+    res.json({ message: "Relação de manga adicionada com sucesso", artist });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro no servidor");
+  }
+};
+
+// Remover um mangaId do campo mangasRelationship de um artista
+exports.removeMangaRelationship = async (req, res) => {
+  const { id } = req.params;
+  const { mangaId } = req.body;
+
+  try {
+    let artist = await Artist.findById(id);
+    if (!artist) {
+      return res.status(404).json({ message: "Artista não encontrado" });
+    }
+
+    console.log("Before removal:", artist.mangasRelationship);
+
+    // Remove o mangaId do campo mangasRelationship
+    artist.mangasRelationship = artist.mangasRelationship.filter(manga => !manga.equals(mangaId));
+
+    console.log("After removal:", artist.mangasRelationship);
+
+    await artist.save();
+
+    res.json({ message: "Relação de manga removida com sucesso", artist });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro no servidor");
+  }
+};
+
+// Buscar um autor pelo nome
+exports.getArtistByName = async (req, res) => {
+  const { name } = req.params;
+
+  try {
+    // Utilize findOne com uma expressão regular para busca insensível a maiúsculas/minúsculas
+    const artist = await Artist.findOne({ name: { $regex: new RegExp(name, 'i') } });
+
+    if (!artist) {
+      return res.status(404).json({ message: "Autor não encontrado" });
+    }
+
+    res.json(artist);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro no servidor");
+  }
+};
