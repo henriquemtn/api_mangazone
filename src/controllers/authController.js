@@ -30,9 +30,28 @@ exports.register = async (req, res) => {
       },
     };
 
-    jwt.sign(payload, 'jwtSecret', { expiresIn: 3600 }, (err, token) => {
+    jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: 3600 }, (err, token) => {
       if (err) throw err;
-      res.json({ token });
+      // Retorna o token JWT e os dados do usuário
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          displayName: user.displayName,
+          biography: user.biography,
+          photoURL: user.photoURL,
+          location: user.location,
+          favorites: user.favorites,
+          characters: user.characters,
+          people: user.people,
+          comments: user.comments,
+          friends: user.friends,
+          wishlist: user.wishlist,
+          role: user.role
+        }
+      });
     });
   } catch (err) {
     console.error(err.message);
@@ -64,7 +83,7 @@ exports.login = async (req, res) => {
       },
     };
 
-    jwt.sign(payload, 'jwtSecret', { expiresIn: 3600 }, (err, token) => {
+    jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: 3600 }, (err, token) => {
       if (err) throw err;
       res.json({
         token,
