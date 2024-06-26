@@ -222,12 +222,12 @@ exports.addVolumeToManga = async (req, res) => {
   }
 };
 
-// Obter mangaCollection de um usuário pelo ID
+// Obter mangaCollection pelo username
 exports.getMangaCollection = async (req, res) => {
-  const userId = req.params.userId; // Obtém o ID do usuário a partir dos parâmetros da URL
+  const username = req.params.username; // Obtém o ID do usuário a partir dos parâmetros da URL
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: 'Usuário não encontrado' });
     }
@@ -239,6 +239,31 @@ exports.getMangaCollection = async (req, res) => {
     res.status(500).send('Erro ao buscar mangaCollection do usuário');
   }
 };
+
+// Verificar se o mangá está na coleção do usuário pelo username
+exports.checkMangaInCollection = async (req, res) => {
+  const username = req.params.username; // Obtém o username do usuário na URL
+  const mangaId = req.params.mangaId; // Obtém o ID do mangá a ser verificado na coleção
+
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    const manga = user.mangaCollection.find(m => m.mangaId.toString() === mangaId);
+    if (manga) {
+      return res.json(true); // Mangá está na coleção do usuário
+    } else {
+      return res.json(false); // Mangá não está na coleção do usuário
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao verificar mangá na coleção do usuário');
+  }
+};
+
+
 
 // Deletar mangá da mangaCollection de um usuário
 exports.deleteMangaFromCollection = async (req, res) => {
@@ -293,5 +318,37 @@ exports.removeVolumesFromManga = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Erro ao remover volumes do mangá');
+  }
+};
+
+// Obter usuário pelo username
+exports.getUserByUsername = async (req, res) => {
+  const { username } = req.params; // Obtém o username dos parâmetros da URL
+
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Retorna os dados do usuário
+    res.json({
+      id: user.id,
+      username: user.username,
+      displayName: user.displayName,
+      biography: user.biography,
+      photoURL: user.photoURL,
+      location: user.location,
+      favorites: user.favorites,
+      characters: user.characters,
+      people: user.people,
+      comments: user.comments,
+      friends: user.friends,
+      wishlist: user.wishlist,
+      role: user.role
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao buscar usuário');
   }
 };
