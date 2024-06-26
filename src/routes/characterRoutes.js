@@ -1,16 +1,18 @@
-const express = require('express');
+const express = require("express");
+const {
+    createCharacter,
+    getAllCharacters,
+    getCharacterById,
+    updateCharacter,
+    deleteCharacter
+} = require("../controllers/characterController");
+
 const router = express.Router();
-const characterController = require('../controllers/characterController');
 
-// Rotas para CRUD de personagens
-router.get('/:mangaId/characters', characterController.getCharactersByManga);
-router.get('/:mangaId/characters/:characterId', characterController.getCharacterById);
-router.post('/:mangaId/characters', characterController.addCharacter);
-router.put('/:mangaId/characters/:characterId', characterController.updateCharacter);
-router.delete('/:mangaId/characters/:characterId', characterController.deleteCharacter);
-
-// Rota para adicionar e remover um dublador a um personagem
-router.put('/:mangaId/characters/:characterId/addVoiceActor/:voiceActorId', characterController.addVoiceActorToCharacter);
-router.delete('/:mangaId/characters/:characterId/removeVoiceActor/:voiceActorId', characterController.removeVoiceActorFromCharacter);
+router.post("/", createCharacter);
+router.get("/", getAllCharacters);
+router.get("/:id", getCharacterById);
+router.patch("/:id", updateCharacter);
+router.delete("/:id", deleteCharacter);
 
 module.exports = router;

@@ -20,7 +20,7 @@ conn();
 
 app.use('/api/user', authRoutes);
 app.use('/api/mangas', mangaRoutes)
-app.use('/api/mangas', characterRoutes);
+app.use('/api/characters', characterRoutes);
 app.use('/api/artists', artistRoutes);
 app.use('/api/genres', genresRoutes);
 app.use('/api/editoras', editoraRoutes);

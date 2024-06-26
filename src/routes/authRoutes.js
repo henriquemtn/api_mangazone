@@ -20,4 +20,14 @@ router.put('/addVolumeToManga', authController.addVolumeToManga);
 router.delete('/mangaCollection/:mangaId', authController.deleteMangaFromCollection); // Rota para deletar um mangá da coleção
 router.put('/mangaCollection/removeVolumes', authController.removeVolumesFromManga); // Rota para remover volumes de um mangá
 
+router.put('/addCharacter', authController.addCharacterToFavorites); // Rota para adicionar personagem aos favoritos
+router.put('/removeCharacter', authController.removeCharacterFromFavorites);
+
+router.put('/addFavorites', authController.addMangaToFavorites); // Rota para adicionar personagem aos favoritos
+router.put('/removeFavorites', authController.removeMangaFromFavorites);
+
+router.put('/addPeoples', authController.addArtistToFavorites); // Rota para adicionar personagem aos favoritos
+router.put('/removePeoples', authController.removeArtistFromFavorites);
+
+
 module.exports = router;

@@ -1,15 +1,5 @@
 const mongoose = require('mongoose');
 
-// Subesquema para Characters
-const charactersSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    photoUrl: { type: String },
-    spoiler: { type: String },
-    age: { type: Number },
-    biography: { type: String },
-    voiceActors: [{type: String}],
-});
-
 // Subesquema para Volumes
 const volumeSchema = new mongoose.Schema({
     number: { type: Number, required: true },
@@ -33,8 +23,8 @@ const mangaSchema = new mongoose.Schema({
     publisherBy: { type: String, required: true },
     synopsis: { type: String, required: true },
     score: { type: Number, min: 0, max: 10 },
-    characters: [charactersSchema],
     volumes: [volumeSchema],
+    characters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Character' }],
     reviews: [{ type: String }]
 }, { timestamps: true });
 

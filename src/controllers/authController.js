@@ -99,6 +99,7 @@ exports.login = async (req, res) => {
           characters: user.characters,
           people: user.people,
           comments: user.comments,
+          mangaCollection: user.mangaCollection,
           friends: user.friends,
           wishlist: user.wishlist,
           role: user.role
@@ -344,11 +345,179 @@ exports.getUserByUsername = async (req, res) => {
       people: user.people,
       comments: user.comments,
       friends: user.friends,
+      mangaCollection: user.mangaCollection,
       wishlist: user.wishlist,
       role: user.role
     });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Erro ao buscar usuário');
+  }
+};
+
+// Adicionar um personagem aos favoritos do usuário
+exports.addCharacterToFavorites = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { characterId } = req.body; // Recebe characterId do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Verifica se o personagem já está na lista de characters
+    if (user.characters.includes(characterId)) {
+      return res.status(400).json({ message: 'Este personagem já está na sua lista de characters' });
+    }
+
+    // Adiciona o personagem à lista de characters
+    user.characters.push(characterId);
+    await user.save();
+
+    res.json({ message: 'Personagem adicionado à lista de characters com sucesso', characterId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao adicionar personagem à lista de characters');
+  }
+};
+
+// Remover um personagem dos favoritos do usuário
+exports.removeCharacterFromFavorites = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { characterId } = req.body; // Recebe characterId do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Verifica se o personagem está na lista de characters
+    const index = user.characters.indexOf(characterId);
+    if (index === -1) {
+      return res.status(400).json({ message: 'Este personagem não está na sua lista de characters' });
+    }
+
+    // Remove o personagem da lista de characters
+    user.characters.splice(index, 1);
+    await user.save();
+
+    res.json({ message: 'Personagem removido da lista de characters com sucesso', characterId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao remover personagem da lista de characters');
+  }
+};
+
+
+// Adicionar um personagem aos favoritos do usuário
+exports.addMangaToFavorites = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { mangaId } = req.body; // Recebe mangaId do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Verifica se o personagem já está na lista de mangás
+    if (user.favorites.includes(mangaId)) {
+      return res.status(400).json({ message: 'Este personagem já está na sua lista de mangás' });
+    }
+
+    // Adiciona o personagem à lista de mangás
+    user.favorites.push(mangaId);
+    await user.save();
+
+    res.json({ message: 'Personagem adicionado à lista de mangás com sucesso', mangaId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao adicionar personagem à lista de mangás');
+  }
+};
+
+// Remover um mangá dos favoritos do usuário
+exports.removeMangaFromFavorites = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { mangaId } = req.body; // Recebe mangaId do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Verifica se o mangá está na lista de favorites
+    const index = user.favorites.indexOf(mangaId);
+    if (index === -1) {
+      return res.status(400).json({ message: 'Este mangá não está na sua lista de favoritos' });
+    }
+
+    // Remove o mangá da lista de favorites
+    user.favorites.splice(index, 1);
+    await user.save();
+
+    res.json({ message: 'Mangá removido da lista de favoritos com sucesso', mangaId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao remover mangá da lista de favoritos');
+  }
+};
+
+
+// Adicionar um Pessoas aos favoritos do usuário
+exports.addArtistToFavorites = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { artistId } = req.body; // Recebe artistId do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Verifica se o Pessoas já está na lista de mangás
+    if (user.people.includes(artistId)) {
+      return res.status(400).json({ message: 'Este Pessoas já está na sua lista de mangás' });
+    }
+
+    // Adiciona o Pessoas à lista de mangás
+    user.people.push(artistId);
+    await user.save();
+
+    res.json({ message: 'Pessoa adicionado à lista de mangás com sucesso', artistId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao adicionar Pessoa à lista de mangás');
+  }
+};
+
+// Remover um artista dos favoritos do usuário
+exports.removeArtistFromFavorites = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { artistId } = req.body; // Recebe artistId do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Verifica se o artista está na lista de people
+    const index = user.people.indexOf(artistId);
+    if (index === -1) {
+      return res.status(400).json({ message: 'Este artista não está na sua lista de people' });
+    }
+
+    // Remove o artista da lista de people
+    user.people.splice(index, 1);
+    await user.save();
+
+    res.json({ message: 'Artista removido da lista de people com sucesso', artistId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao remover artista da lista de people');
   }
 };

@@ -45,16 +45,11 @@ exports.createManga = async (req, res) => {
 // Obter todos os mangás (com filtro opcional por nome)
 exports.getAllMangas = async (req, res) => {
   try {
-    // Verifica se há um parâmetro de consulta 'nome'
     const { nome } = req.query;
     let query = {};
-
-    // Se 'nome' estiver presente na consulta, constrói a consulta para filtrar por nome
     if (nome) {
-      query = { title: { $regex: new RegExp(nome, 'i') } }; // 'i' para fazer a busca case insensitive
+      query = { title: { $regex: new RegExp(nome, 'i') } };
     }
-
-    // Realiza a busca no banco de dados com a consulta construída
     const mangas = await Manga.find(query);
     res.json(mangas);
   } catch (err) {
@@ -276,5 +271,65 @@ exports.deleteVolume = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Erro ao deletar volume do mangá");
+  }
+};
+
+// Adicionar um personagem a um mangá
+exports.addCharacterToManga = async (req, res) => {
+  const { mangaId } = req.params;
+  const { characterId } = req.body;
+
+  try {
+    // Encontra o mangá pelo ID
+    const manga = await Manga.findById(mangaId);
+    if (!manga) {
+      return res.status(404).json({ message: "Mangá não encontrado" });
+    }
+
+    // Verifica se o personagem já está adicionado
+    if (manga.characters.includes(characterId)) {
+      return res.status(400).json({ message: "Personagem já adicionado ao mangá" });
+    }
+
+    // Adiciona o ID do personagem ao array de characters do mangá
+    manga.characters.push(characterId);
+
+    // Salva as alterações no banco de dados
+    await manga.save();
+
+    res.json({ message: "Personagem adicionado com sucesso ao mangá", manga });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro ao adicionar personagem ao mangá");
+  }
+};
+
+// Remover um personagem de um mangá
+exports.removeCharacterFromManga = async (req, res) => {
+  const { mangaId } = req.params;
+  const { characterId } = req.body;
+
+  try {
+    // Encontra o mangá pelo ID
+    const manga = await Manga.findById(mangaId);
+    if (!manga) {
+      return res.status(404).json({ message: "Mangá não encontrado" });
+    }
+
+    // Verifica se o personagem está no mangá
+    if (!manga.characters.includes(characterId)) {
+      return res.status(400).json({ message: "Personagem não encontrado no mangá" });
+    }
+
+    // Remove o ID do personagem do array de characters do mangá
+    manga.characters = manga.characters.filter((id) => id.toString() !== characterId);
+
+    // Salva as alterações no banco de dados
+    await manga.save();
+
+    res.json({ message: "Personagem removido com sucesso do mangá", manga });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro ao remover personagem do mangá");
   }
 };
