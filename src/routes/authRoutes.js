@@ -18,7 +18,7 @@ router.put('/update', authController.updateUser);
 router.delete('/delete', authController.deleteUser);
 router.post('/addMangaToCollection', authController.addToMangaCollection); 
 router.put('/addVolumeToManga', authController.addVolumeToManga);
-app.post('/removeVolumeFromManga', authController.removeVolumeFromManga);
+router.put('/removeVolumeFromManga', authController.removeVolumeFromManga);
 
 router.delete('/mangaCollection/:mangaId', authController.deleteMangaFromCollection); // Rota para deletar um mangá da coleção
 
