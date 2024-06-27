@@ -6,6 +6,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 // Rotas publicas
 router.post('/register', authController.register);
 router.post('/login', authController.login);
+router.get('/id/:id', authController.getUserByID);
 router.get('/:username', authController.getUserByUsername);
 router.get('/:username/mangaCollection', authController.getMangaCollection); 
 router.get('/:username/checkMangaInCollection/:mangaId', authController.checkMangaInCollection);
@@ -28,6 +29,10 @@ router.put('/removeFavorites', authController.removeMangaFromFavorites);
 
 router.put('/addPeoples', authController.addArtistToFavorites); // Rota para adicionar personagem aos favoritos
 router.put('/removePeoples', authController.removeArtistFromFavorites);
+
+router.put('/addFriend', authController.addFriend);
+router.put('/removeFriend', authController.removeFriend);
+
 
 
 module.exports = router;

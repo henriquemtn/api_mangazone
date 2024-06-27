@@ -322,6 +322,40 @@ exports.removeVolumesFromManga = async (req, res) => {
   }
 };
 
+// Obter usuário pelo id
+exports.getUserByID = async (req, res) => {
+  const userId = req.params.id; // Obtém o ID do usuário a partir dos parâmetros da URL
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Retorna os dados do usuário
+    res.json({
+      id: user.id,
+      username: user.username,
+      displayName: user.displayName,
+      biography: user.biography,
+      photoURL: user.photoURL,
+      location: user.location,
+      favorites: user.favorites,
+      characters: user.characters,
+      people: user.people,
+      comments: user.comments,
+      friends: user.friends,
+      mangaCollection: user.mangaCollection,
+      wishlist: user.wishlist,
+      role: user.role
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao buscar usuário');
+  }
+};
+
+
 // Obter usuário pelo username
 exports.getUserByUsername = async (req, res) => {
   const { username } = req.params; // Obtém o username dos parâmetros da URL
@@ -519,5 +553,60 @@ exports.removeArtistFromFavorites = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Erro ao remover artista da lista de people');
+  }
+};
+
+// Adicionar um Usuario aos amigos do usuário
+exports.addFriend = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { friendId } = req.body; // Recebe artistId do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Verifica se o Pessoas já está na lista de mangás
+    if (user.friends.includes(friendId)) {
+      return res.status(400).json({ message: 'Esta pessoa já está na sua lista de amigos' });
+    }
+
+    // Adiciona o Pessoas à lista de mangás
+    user.friends.push(friendId);
+    await user.save();
+
+    res.json({ message: 'Pessoa adicionada à lista de amigos com sucesso', friendId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao adicionar Pessoa à lista de amigos');
+  }
+};
+
+// Remover um artista dos favoritos do usuário
+exports.removeFriend = async (req, res) => {
+  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
+  const { friendId } = req.body; // Recebe friendId do corpo da requisição
+
+  try {
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    // Verifica se o artista está na lista de people
+    const index = user.friends.indexOf(friendId);
+    if (index === -1) {
+      return res.status(400).json({ message: 'Essa pessoa não está na sua lista de amigos' });
+    }
+
+    // Remove o artista da lista de friends
+    user.friends.splice(index, 1);
+    await user.save();
+
+    res.json({ message: 'Usuario removido da lista de amigos com sucesso', friendId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro ao remover usuario da lista de amigos');
   }
 };
