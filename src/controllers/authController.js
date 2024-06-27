@@ -294,34 +294,6 @@ exports.deleteMangaFromCollection = async (req, res) => {
   }
 };
 
-// Remover volumes de um mangá na mangaCollection de um usuário
-exports.removeVolumesFromManga = async (req, res) => {
-  const userId = req.user.id; // Obtém o ID do usuário autenticado (via token JWT)
-  const { mangaId, volumeId } = req.body; // Recebe mangaId e volumeIds do corpo da requisição
-
-  try {
-    let user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
-    }
-
-    // Encontra o mangá na mangaCollection do usuário
-    const manga = user.mangaCollection.find(item => item.mangaId.equals(mangaId));
-    if (!manga) {
-      return res.status(404).json({ message: 'Mangá não encontrado na coleção do usuário' });
-    }
-
-    // Remove os volumeIds do mangá na mangaCollection
-    manga.volumes = manga.volumes.filter(vol => !volumeId.includes(vol.toString())); // Converte para string para comparação
-    await user.save();
-
-    res.json({ message: 'Volumes removidos do mangá com sucesso', mangaId, volumeId });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Erro ao remover volumes do mangá');
-  }
-};
-
 // Obter usuário pelo id
 exports.getUserByID = async (req, res) => {
   const userId = req.params.id; // Obtém o ID do usuário a partir dos parâmetros da URL
