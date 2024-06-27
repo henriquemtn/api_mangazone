@@ -239,12 +239,6 @@ exports.removeVolumeFromManga = async (req, res) => {
       return res.status(404).json({ message: 'Mangá não encontrado na coleção do usuário' });
     }
 
-    // Verifica se o volume está presente no mangá
-    const index = manga.volumes.findIndex(v => v === volumeId);
-    if (index === -1) {
-      return res.status(400).json({ message: 'Este volume não está associado ao mangá' });
-    }
-
     // Remove o volume do mangá na mangaCollection usando splice
     manga.volumes.splice(index, 1);
     await user.save();
