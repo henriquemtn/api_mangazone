@@ -245,7 +245,7 @@ exports.removeVolumeFromManga = async (req, res) => {
     }
 
     // Remove o volume do mangá na mangaCollection
-    manga.volumes = manga.volumes.filter(v => v !== volumeId);
+    manga.volumes.splice(index, 1);
     await user.save();
 
     res.json({ message: 'Volume removido do mangá com sucesso', mangaId, volumeId });
