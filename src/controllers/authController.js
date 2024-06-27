@@ -30,7 +30,7 @@ exports.register = async (req, res) => {
       },
     };
 
-    jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: 3600 }, (err, token) => {
+    jwt.sign(payload, process.env.JWT_SECRET_KEY, (err, token) => {
       if (err) throw err;
       // Retorna o token JWT e os dados do usuário
       res.json({
