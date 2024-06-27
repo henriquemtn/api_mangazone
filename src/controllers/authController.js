@@ -239,8 +239,14 @@ exports.removeVolumeFromManga = async (req, res) => {
       return res.status(404).json({ message: 'Mangá não encontrado na coleção do usuário' });
     }
 
+    // Encontra o índice do volume a ser removido
+    const volumeIndex = manga.volumes.indexOf(volumeId);
+    if (volumeIndex === -1) {
+      return res.status(404).json({ message: 'Volume não encontrado no mangá' });
+    }
+
     // Remove o volume do mangá na mangaCollection usando splice
-    manga.volumes.splice(index, 1);
+    manga.volumes.splice(volumeIndex, 1);
     await user.save();
 
     res.json({ message: 'Volume removido do mangá com sucesso', mangaId, volumeId });
@@ -249,6 +255,7 @@ exports.removeVolumeFromManga = async (req, res) => {
     res.status(500).send('Erro ao remover volume do mangá');
   }
 };
+
 
 
 // Obter mangaCollection pelo username
